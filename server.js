@@ -32,14 +32,14 @@ const adapt = (handler) => async (req, res) => {
 
 // Load all API handlers
 try {
-  const { default: authHandler } = await import('./api/auth.js');
-  const { default: carouselHandler } = await import('./api/carousel.js');
-  const { default: albumsHandler } = await import('./api/albums.js');
-  const { default: photosHandler } = await import('./api/photos.js');
-  const { default: videosHandler } = await import('./api/videos.js');
-  const { default: pricingHandler } = await import('./api/pricing.js');
-  const { default: uploadHandler } = await import('./api/upload.js');
-  const { default: uploadMiddleware } = await import('./api/uploadMiddleware.js');
+  const { default: authHandler } = await import('./backend/auth.js');
+  const { default: carouselHandler } = await import('./backend/carousel.js');
+  const { default: albumsHandler } = await import('./backend/albums.js');
+  const { default: photosHandler } = await import('./backend/photos.js');
+  const { default: videosHandler } = await import('./backend/videos.js');
+  const { default: pricingHandler } = await import('./backend/pricing.js');
+  const { default: uploadHandler } = await import('./backend/upload.js');
+  const { default: uploadMiddleware } = await import('./backend/uploadMiddleware.js');
 
   app.all('/api/auth', adapt(authHandler));
   app.all('/api/carousel', adapt(carouselHandler));
@@ -58,13 +58,17 @@ try {
 }
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on http://localhost:${PORT}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${PORT} is already in use.`);
-  } else {
-    console.error('❌ Server error:', err);
-  }
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✅ Backend running on http://localhost:${PORT}`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use.`);
+    } else {
+      console.error('❌ Server error:', err);
+    }
+    process.exit(1);
+  });
+}
+
+export default app;

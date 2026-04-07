@@ -1,26 +1,29 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { v2 as cloudinary } from 'cloudinary';
 import dbConnect from './utils/db.js';
 import Photo from './models/Photo.js';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export default async function handler(req, res) {
   try {
     await dbConnect();
 
-    // CORS preflight
-    if (req.method === 'OPTIONS') {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      return res.status(200).end();
-    }
-    
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
 
     if (req.method === 'GET') {
       const { albumId } = req.query;
-      let query = {};
-      if (albumId) {
-        query.albumId = albumId;
-      }
+      const query = albumId ? { albumId } : {};
       const photos = await Photo.find(query).sort({ order: 1 });
       return res.status(200).json({ success: true, data: photos });
     }
@@ -31,7 +34,15 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'DELETE') {
-      const { id } = req.query; // mongo _id
+      const { id } = req.query;
+      const photo = await Photo.findById(id);
+      if (photo?.publicId) {
+        try {
+          await cloudinary.uploader.destroy(photo.publicId);
+        } catch (e) {
+          console.error('Cloudinary delete failed:', e.message);
+        }
+      }
       await Photo.findByIdAndDelete(id);
       return res.status(200).json({ success: true });
     }

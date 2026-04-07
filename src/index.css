@@ -5,15 +5,15 @@
 /* ACTIVE THEME */
 
 :root {
-  --cream: #0A1128;      --cream-rgb: 10, 17, 40;
-  --cream2: #162447;     --cream2-rgb: 22, 36, 71;
-  --brown: #FDE8E9;      --brown-rgb: 253, 232, 233;
-  --brown2: #B76E79;
-  --brown3: #8B535C;
-  --red: #B76E79;        --red-rgb: 183, 110, 121;
-  --red2: #8B535C;
-  --gold: #E0BFB8;
-  --warm: #050814;       --warm-rgb: 5, 8, 20;
+  --cream: #1C1C1E;      --cream-rgb: 28, 28, 30;
+  --cream2: #2C2C2E;     --cream2-rgb: 44, 44, 46;
+  --brown: #E5E5EA;      --brown-rgb: 229, 229, 234;
+  --brown2: #CD7F32;
+  --brown3: #8C5621;
+  --red: #CD7F32;        --red-rgb: 205, 127, 50;
+  --red2: #8C5621;
+  --gold: #D4AF37;
+  --warm: #0E0E0F;       --warm-rgb: 14, 14, 15;
 }
 
 

@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/auth", "destination": "/api/auth" },
+    { "source": "/api/carousel", "destination": "/api/carousel" },
+    { "source": "/api/albums", "destination": "/api/albums" },
+    { "source": "/api/photos", "destination": "/api/photos" },
+    { "source": "/api/videos", "destination": "/api/videos" },
+    { "source": "/api/pricing", "destination": "/api/pricing" },
+    { "source": "/api/upload", "destination": "/api/upload" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

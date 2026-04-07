@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const CarouselSchema = new mongoose.Schema({
   src: { type: String, required: true },
+  publicId: { type: String }, // Cloudinary public_id for deletion
   tab: { type: String, required: true },
   order: { type: Number, default: 0 }
 });

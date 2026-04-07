@@ -84,10 +84,10 @@ const Admin = () => {
       </header>
       
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '1rem' }}>
-        <button onClick={() => setActiveTab('carousel')} className={activeTab === 'carousel' ? 'btn-primary' : 'btn-ghost'}>Carousel</button>
-        <button onClick={() => setActiveTab('gallery')} className={activeTab === 'gallery' ? 'btn-primary' : 'btn-ghost'}>Gallery</button>
-        <button onClick={() => setActiveTab('videos')} className={activeTab === 'videos' ? 'btn-primary' : 'btn-ghost'}>Videos</button>
-        <button onClick={() => setActiveTab('pricing')} className={activeTab === 'pricing' ? 'btn-primary' : 'btn-ghost'}>Pricing</button>
+        <button onClick={() => setActiveTab('carousel')} className={activeTab === 'carousel' ? 'btn-primary' : 'btn-ghost'}>🖼 Carousel</button>
+        <button onClick={() => setActiveTab('gallery')} className={activeTab === 'gallery' ? 'btn-primary' : 'btn-ghost'}>📂 Albums</button>
+        <button onClick={() => setActiveTab('videos')} className={activeTab === 'videos' ? 'btn-primary' : 'btn-ghost'}>🎬 Videos</button>
+        <button onClick={() => setActiveTab('pricing')} className={activeTab === 'pricing' ? 'btn-primary' : 'btn-ghost'}>💰 Pricing</button>
       </div>
 
       <main>

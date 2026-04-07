@@ -1,92 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { getCarouselImages, addCarouselImage, deleteCarouselImage } from '../../services/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { getCarouselImages, addCarouselImage, deleteCarouselImage, uploadImage } from '../../services/api';
+
+const CAROUSEL_TABS = ['Wedding', 'Pre-Wedding', 'Engagement', 'Reception'];
 
 const AdminCarousel = () => {
   const [images, setImages] = useState([]);
-  const [newImage, setNewImage] = useState({ imageUrl: '', altText: '', order: 0 });
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(CAROUSEL_TABS[0]);
+  const [preview, setPreview] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState('');
+  const fileRef = useRef();
 
-  useEffect(() => {
-    fetchImages();
-  }, []);
+  useEffect(() => { fetchImages(); }, []);
 
   const fetchImages = async () => {
     try {
       const res = await getCarouselImages();
       if (res.success) setImages(res.data);
-    } catch (error) {
-      console.error('Failed to fetch images');
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError('Failed to load images'); }
+    finally { setLoading(false); }
   };
 
-  const handleAdd = async (e) => {
+  const handleFileSelect = (file) => {
+    if (!file || !file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      return;
+    }
+    setError('');
+    setSelectedFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  const handleDrop = (e) => {
     e.preventDefault();
+    setDragOver(false);
+    handleFileSelect(e.dataTransfer.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) { setError('Please select an image first'); return; }
+    setUploading(true);
+    setUploadProgress(10);
     try {
-      const res = await addCarouselImage(newImage);
-      if (res.success) {
-        setImages([...images, res.data]);
-        setNewImage({ imageUrl: '', altText: '', order: 0 });
+      const uploadRes = await uploadImage(selectedFile, 'abhay-photography/carousel');
+      setUploadProgress(70);
+      if (!uploadRes.success) throw new Error(uploadRes.error || 'Upload failed');
+
+      const saveRes = await addCarouselImage({
+        src: uploadRes.url,
+        publicId: uploadRes.publicId,
+        tab: selectedTab,
+        order: images.length,
+      });
+      setUploadProgress(100);
+      if (saveRes.success) {
+        setImages([...images, saveRes.data]);
+        setSelectedFile(null);
+        setPreview(null);
       }
-    } catch (error) {
-      console.error('Failed to add image');
+    } catch (e) {
+      setError(e.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Delete this image? It will also be removed from Cloudinary.')) return;
     try {
       const res = await deleteCarouselImage(id);
-      if (res.success) {
-        setImages(images.filter(img => img._id !== id));
-      }
-    } catch (error) {
-      console.error('Failed to delete image');
-    }
+      if (res.success) setImages(images.filter(img => img._id !== id));
+    } catch { setError('Delete failed'); }
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '12px 14px',
+    border: '1px solid var(--brown2)', borderRadius: '8px',
+    background: 'rgba(255,255,255,0.6)', color: 'var(--brown)',
+    fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box',
   };
 
   return (
-    <div style={{ background: 'var(--cream2)', padding: '2rem', borderRadius: '12px', color: 'var(--brown)' }}>
-      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2rem', marginBottom: '1.5rem' }}>Manage Carousel</h2>
-      
-      <form onSubmit={handleAdd} style={{ display: 'grid', gap: '1rem', marginBottom: '2rem', background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '8px' }}>
-        <input 
-          type="text" 
-          placeholder="Image URL (Cloudinary etc)" 
-          value={newImage.imageUrl} 
-          onChange={(e) => setNewImage({...newImage, imageUrl: e.target.value})} 
-          required 
-          style={{ width: '100%', padding: '12px', border: '1px solid var(--brown2)', background: 'var(--cream)', color: 'var(--brown)', borderRadius: '4px' }}
-        />
-        <input 
-          type="text" 
-          placeholder="Alt Text" 
-          value={newImage.altText} 
-          onChange={(e) => setNewImage({...newImage, altText: e.target.value})} 
-          style={{ width: '100%', padding: '12px', border: '1px solid var(--brown2)', background: 'var(--cream)', color: 'var(--brown)', borderRadius: '4px' }}
-        />
-        <input 
-          type="number" 
-          placeholder="Order (optional)" 
-          value={newImage.order} 
-          onChange={(e) => setNewImage({...newImage, order: parseInt(e.target.value) || 0})} 
-          style={{ width: '100%', padding: '12px', border: '1px solid var(--brown2)', background: 'var(--cream)', color: 'var(--brown)', borderRadius: '4px' }}
-        />
-        <button type="submit" className="btn-primary" style={{ width: 'max-content' }}>Add Image</button>
-      </form>
+    <div style={{ color: 'var(--brown)' }}>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', marginBottom: '1.5rem' }}>
+        Carousel Images
+      </h2>
 
-      {loading ? <p>Loading...</p> : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+      {/* Upload Card */}
+      <div style={{ background: 'rgba(255,255,255,0.5)', border: '1px solid var(--brown3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem' }}>
+        <h3 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: '600', opacity: 0.8 }}>Upload New Image</h3>
+
+        {/* Tab selector */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          {CAROUSEL_TABS.map(tab => (
+            <button key={tab} onClick={() => setSelectedTab(tab)}
+              style={{
+                padding: '6px 16px', borderRadius: '20px', border: '1.5px solid var(--brown2)',
+                background: selectedTab === tab ? 'var(--brown)' : 'transparent',
+                color: selectedTab === tab ? 'white' : 'var(--brown)',
+                cursor: 'pointer', fontSize: '0.85rem', fontWeight: '500', transition: 'all 0.2s'
+              }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Drag-Drop Zone */}
+        <div
+          onClick={() => fileRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          style={{
+            border: `2px dashed ${dragOver ? 'var(--brown)' : 'var(--brown3)'}`,
+            borderRadius: '12px', padding: '2rem', textAlign: 'center',
+            cursor: 'pointer', transition: 'all 0.2s', marginBottom: '1rem',
+            background: dragOver ? 'rgba(0,0,0,0.03)' : 'transparent',
+            minHeight: preview ? 'auto' : '140px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+          }}>
+          {preview ? (
+            <>
+              <img src={preview} alt="preview" style={{ maxHeight: '200px', maxWidth: '100%', borderRadius: '8px', objectFit: 'cover' }} />
+              <p style={{ fontSize: '0.85rem', opacity: 0.6, marginTop: '0.5rem' }}>Click to change image</p>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: '2.5rem' }}>📷</span>
+              <p style={{ margin: 0, fontWeight: '500' }}>Drag & drop or click to select</p>
+              <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.6 }}>JPG, PNG, WEBP — max 20MB</p>
+            </>
+          )}
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => handleFileSelect(e.target.files[0])} />
+
+        {error && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: '0.8rem' }}>{error}</p>}
+
+        {/* Progress bar */}
+        {uploading && (
+          <div style={{ background: 'var(--brown3)', borderRadius: '4px', height: '6px', marginBottom: '1rem', overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: 'var(--brown)', width: `${uploadProgress}%`, transition: 'width 0.4s ease', borderRadius: '4px' }} />
+          </div>
+        )}
+
+        <button onClick={handleUpload} disabled={uploading || !selectedFile}
+          style={{
+            padding: '10px 24px', background: selectedFile ? 'var(--brown)' : 'var(--brown3)',
+            color: 'white', border: 'none', borderRadius: '8px', cursor: selectedFile ? 'pointer' : 'not-allowed',
+            fontWeight: '600', fontSize: '0.95rem', transition: 'all 0.2s'
+          }}>
+          {uploading ? `Uploading... ${uploadProgress}%` : 'Upload to Cloudinary'}
+        </button>
+      </div>
+
+      {/* Images Grid */}
+      <h3 style={{ fontSize: '1rem', fontWeight: '600', opacity: 0.8, marginBottom: '1rem' }}>
+        Current Carousel ({images.length} images)
+      </h3>
+      {loading ? (
+        <p style={{ opacity: 0.6 }}>Loading...</p>
+      ) : images.length === 0 ? (
+        <p style={{ opacity: 0.5, textAlign: 'center', padding: '2rem' }}>No carousel images yet. Upload one above.</p>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
           {images.map(img => (
-            <div key={img._id} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--brown3)' }}>
-              <img src={img.imageUrl} alt={img.altText} style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }} />
-              <button 
-                onClick={() => handleDelete(img._id)}
-                style={{ position: 'absolute', top: '8px', right: '8px', background: 'var(--red)', color: 'white', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer' }}
-              >
-                Delete
-              </button>
-              <div style={{ padding: '8px', background: 'var(--cream)', fontSize: '0.85rem' }}>Order: {img.order}</div>
+            <div key={img._id} style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--brown3)', background: 'rgba(255,255,255,0.4)', position: 'relative' }}>
+              <img src={img.src} alt="carousel" style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }} />
+              <div style={{ padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', background: 'var(--brown3)', padding: '3px 10px', borderRadius: '12px', color: 'var(--brown)', fontWeight: '500' }}>
+                  {img.tab || '—'}
+                </span>
+                <button onClick={() => handleDelete(img._id)}
+                  style={{ padding: '5px 12px', background: '#c0392b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}>
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>

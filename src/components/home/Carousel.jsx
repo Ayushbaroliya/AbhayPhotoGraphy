@@ -43,7 +43,7 @@ const Carousel = () => {
   }, []);
 
   // For a concave interior cylinder, radius controls how wide the arc is around the viewer
-  const radius = isMobile ? 300 : 450;
+  const radius = isMobile ? 320 : 550;
   const theta = 360 / n;
 
   const handleNav = (i) => {
@@ -87,8 +87,9 @@ const Carousel = () => {
 
             const angle = i * theta;
 
-            // Dim images aggressively as they wrap around the peripheral vision
-            const op = diff > 2 ? 0 : (diff === 2 ? 0.15 : (diff === 1 ? 0.6 : 1));
+            // Dim and blur images aggressively as they wrap around the peripheral vision
+            const op = diff > 2 ? 0 : (diff === 2 ? 0.1 : (diff === 1 ? 0.5 : 1));
+            const blurVal = diff === 0 ? 0 : (diff === 1 ? 2 : 6);
             const isClickable = diff <= 1;
 
             return (
@@ -101,7 +102,8 @@ const Carousel = () => {
                   // Translate Z backwards to establish the wall of the cylinder
                   transform: `rotateY(${angle}deg) translateZ(${-radius}px)`,
                   opacity: op,
-                  transition: 'opacity 0.6s, box-shadow 0.6s',
+                  filter: `blur(${blurVal}px)`,
+                  transition: 'opacity 0.6s, box-shadow 0.6s, filter 0.6s',
                   pointerEvents: isClickable ? 'auto' : 'none',
                   boxShadow: diff === 0 ? '0 30px 60px rgba(0,0,0,0.5)' : '0 10px 30px rgba(0,0,0,0.1)',
                   borderRadius: '16px',

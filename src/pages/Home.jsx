@@ -86,7 +86,12 @@ const Home = () => {
                   <li key={j}>{feat}</li>
                 ))}
               </ul>
-              <button className="btn-pricing">{plan.buttonText}</button>
+              <button 
+                className="btn-pricing" 
+                onClick={() => window.open(`https://wa.me/919302049601?text=Hi! I saw your ${plan.name} package on your portfolio and I would like to book/enquire about it.`, '_blank')}
+              >
+                {plan.buttonText || 'Book Now'}
+              </button>
             </div>
           ))}
         </div>

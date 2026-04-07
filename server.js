@@ -46,11 +46,11 @@ app.all('/api/photos', adapt(photosHandler));
 app.all('/api/videos', adapt(videosHandler));
 app.all('/api/pricing', adapt(pricingHandler));
 
-// Upload route: locally use multer, on Vercel use the manual raw body parser
+// Upload route: always use multer since Vercel bodyParser is disabled
 app.post('/api/upload', (req, res, next) => {
   console.log('[SERVER] Incoming request to /api/upload:', req.headers['content-type']);
   next();
-}, process.env.VERCEL ? (req, res, next) => next() : uploadMiddleware, adapt(uploadHandler));
+}, uploadMiddleware, adapt(uploadHandler));
 
 console.log('✅ All API routes loaded successfully');
 

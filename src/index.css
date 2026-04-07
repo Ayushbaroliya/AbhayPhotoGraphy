@@ -150,7 +150,8 @@ section { padding: 100px 48px; max-width: 1440px; margin: 0 auto; width: 100%; }
 .tcard-quote { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; line-height: 1.7; color: rgba(var(--brown-rgb), 0.9); margin-bottom: 24px; flex-grow: 1; }
 
 .pcard { border: 1px solid rgba(var(--brown-rgb), 0.15); border-radius: 8px; padding: 40px 32px; display: flex; flex-direction: column; transition: all 0.3s; }
-.pcard.featured { background: var(--brown); border-color: var(--brown); transform: scale(1.04); box-shadow: 0 24px 60px rgba(var(--warm-rgb), 0.4); z-index: 2; }
+.pcard.featured { background: var(--brown); border-color: var(--brown); color: var(--cream); transform: scale(1.04); box-shadow: 0 24px 60px rgba(var(--warm-rgb), 0.4); z-index: 2; }
+.pcard.featured .p-name, .pcard.featured .p-price, .pcard.featured .p-per, .pcard.featured .p-features li { color: var(--cream); }
 .p-name { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; margin-bottom: 8px; }
 .p-price { font-size: 2.5rem; font-weight: 300; margin: 16px 0 4px; }
 .btn-pricing { width: 100%; padding: 14px; margin-top: auto; border: 1px solid rgba(var(--brown-rgb), 0.3); background: transparent; cursor: pointer; text-transform: uppercase; font-family: 'Jost', sans-serif; transition: all 0.2s; }

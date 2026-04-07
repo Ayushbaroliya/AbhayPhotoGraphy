@@ -3,19 +3,17 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 /* ACTIVE THEME */
-
 :root {
-  --cream: #1C1C1E;      --cream-rgb: 28, 28, 30;
-  --cream2: #2C2C2E;     --cream2-rgb: 44, 44, 46;
-  --brown: #E5E5EA;      --brown-rgb: 229, 229, 234;
-  --brown2: #CD7F32;
-  --brown3: #8C5621;
-  --red: #CD7F32;        --red-rgb: 205, 127, 50;
-  --red2: #8C5621;
-  --gold: #D4AF37;
-  --warm: #0E0E0F;       --warm-rgb: 14, 14, 15;
+  --cream: #0B0B2A;      --cream-rgb: 11, 11, 42;
+  --cream2: #1A1A4D;     --cream2-rgb: 26, 26, 77;
+  --brown: #F8F8FF;      --brown-rgb: 248, 248, 255;
+  --brown2: #C0C0C0;
+  --brown3: #808080;
+  --red: #483D8B;        --red-rgb: 72, 61, 139;
+  --red2: #282152;
+  --gold: #E6E6FA;
+  --warm: #050514;       --warm-rgb: 5, 5, 20;
 }
-
 
 /* =========================================
    BASE & TYPOGRAPHY
@@ -38,6 +36,33 @@ body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--b
 .nav-links a:hover { opacity: 1; }
 .btn-nav { background: var(--red); color: #fff; border: none; cursor: pointer; padding: 11px 26px; border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; transition: transform 0.2s; }
 .btn-nav:hover { transform: translateY(-2px); }
+.nav-actions { display: flex; align-items: center; gap: 16px; }
+.social-icons { display: flex; gap: 12px; }
+.social-icons a { color: var(--brown); opacity: 0.7; transition: opacity 0.2s; display: flex; }
+.social-icons a:hover { opacity: 1; }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 1001;
+}
+.hamburger span {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background: var(--brown);
+  transition: all 0.3s ease;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+.mobile-social-icons { display: none; }
 
 /* =========================================
    HERO SECTION
@@ -209,6 +234,14 @@ footer { background: var(--warm); color: var(--brown); padding: 80px 48px 32px; 
   100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* =========================================
    RESPONSIVE BREAKPOINTS (The Fixes)
    ========================================= */
@@ -232,7 +265,43 @@ footer { background: var(--warm); color: var(--brown); padding: 80px 48px 32px; 
 @media (max-width: 768px) {
   /* Header */
   .nav { padding: 16px 20px; }
-  .nav-links { display: none; } /* Hide links for hamburger menu */
+  
+  .hamburger { display: flex; }
+  
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: 280px;
+    background: rgba(var(--warm-rgb), 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    padding: 100px 40px;
+    gap: 32px;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  .nav-links.open { right: 0; }
+  .nav-links a { font-size: 1.1rem; opacity: 0.9; }
+
+  .mobile-social-icons { 
+    margin-top: auto; 
+    display: flex; 
+    gap: 24px; 
+    padding-top: 32px;
+    border-top: 1px solid rgba(var(--brown-rgb), 0.1);
+    align-items: center;
+  }
+  .mobile-social-icons a {
+    color: var(--brown);
+    opacity: 0.8;
+  }
+  
+  .social-icons { display: none; }
   .btn-nav { padding: 8px 16px; font-size: 0.7rem; }
   
   /* Hero */

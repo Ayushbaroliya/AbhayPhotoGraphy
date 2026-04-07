@@ -16,6 +16,10 @@ export const loginAdmin = async (password) => {
   const response = await api.post('/auth', { password });
   return response.data;
 };
+export const verifyAuth = async () => {
+  const response = await api.get('/auth');
+  return response.data;
+};
 
 // ── Upload (direct to Cloudinary via server) ──────────────────────────────────
 export const uploadImage = async (file, folder = 'abhay-photography') => {

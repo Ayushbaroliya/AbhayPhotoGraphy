@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Lock } from 'lucide-react';
-import { loginAdmin } from '../services/api';
+import { Lock, Loader2 } from 'lucide-react';
+import { loginAdmin, verifyAuth } from '../services/api';
 
 import AdminCarousel from '../components/admin/AdminCarousel';
 import AdminGallery from '../components/admin/AdminGallery';
@@ -12,13 +12,27 @@ const Admin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
   const [activeTab, setActiveTab] = useState('carousel');
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      setIsAuthenticated(true);
-    }
+    const checkAuth = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        try {
+          const res = await verifyAuth();
+          if (res && res.success) {
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem('adminToken');
+          }
+        } catch (err) {
+          localStorage.removeItem('adminToken');
+        }
+      }
+      setIsVerifying(false);
+    };
+    checkAuth();
   }, []);
 
   const handleLogin = async (e) => {
@@ -43,7 +57,18 @@ const Admin = () => {
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     setIsAuthenticated(false);
+    setPassword('');
+    setError('');
   };
+
+  if (isVerifying) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--cream2)', color: 'var(--brown)' }}>
+        <Loader2 size={48} className="animate-spin" style={{ marginBottom: '1rem', opacity: 0.5 }} />
+        <p style={{ opacity: 0.6, fontSize: '0.9rem', letterSpacing: '0.05em' }}>Verifying Session...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

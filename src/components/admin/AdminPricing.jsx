@@ -105,7 +105,7 @@ const AdminPricing = () => {
           required 
           style={{ gridColumn: 'span 2', width: '100%', padding: '12px', border: '1px solid var(--brown2)', background: 'var(--cream)', color: 'var(--brown)', borderRadius: '4px' }}
         />
-        <button type="submit" className="btn-primary" style={{ width: 'max-content', gridColumn: 'span 2' }}>Add Package</button>
+        <button type="submit" className="btn-primary" style={{ width: 'max-content', gridColumn: 'span 2', padding: '12px 24px' }}>Add Package</button>
       </form>
 
       {loading ? <p>Loading...</p> : (
@@ -119,7 +119,7 @@ const AdminPricing = () => {
                   {pkg.features.map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
               </div>
-              <button onClick={() => handleDelete(pkg._id)} className="btn-ghost">Delete</button>
+              <button onClick={() => handleDelete(pkg._id)} className="btn-danger-metallic">Delete</button>
             </div>
           ))}
         </div>

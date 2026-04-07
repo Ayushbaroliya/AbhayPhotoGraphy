@@ -1,35 +1,55 @@
 import React, { useState, useEffect } from 'react';
-// lucide-react might be missing some exports in the current version, so we'll use SVGs for socials
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const scrollToSection = (id) => {
+    if (location.pathname !== '/') {
+      navigate('/?scroll=' + id);
+      return;
+    }
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    setMenuOpen(false); // Close menu on click
+    if (el) {
+      const offset = 80; // height of navbar
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = el.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+    setMenuOpen(false);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const scrollId = params.get('scroll');
+    if (scrollId && location.pathname === '/') {
+      setTimeout(() => scrollToSection(scrollId), 100);
+      navigate('/', { replace: true });
+    }
+  }, [location]);
 
   return (
     <nav className={`nav ${scrolled ? 'scrolled' : ''}`} id="navbar">
-      <a className="logo" href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
+      <Link className="logo" to="/" onClick={() => scrollToSection('home')}>
         Abhay<span>Photography</span>
-      </a>
+      </Link>
 
 
 
       <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
         <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Gallery</a></li>
         <li><a href="#videos" onClick={(e) => { e.preventDefault(); scrollToSection('videos'); }}>Videos</a></li>
+        <li><Link to="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
         <li><a href="#pricing" onClick={(e) => { e.preventDefault(); scrollToSection('pricing'); }}>Pricing</a></li>
         <li><a href="#testimonials" onClick={(e) => { e.preventDefault(); scrollToSection('testimonials'); }}>Stories</a></li>
         <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Contact</a></li>

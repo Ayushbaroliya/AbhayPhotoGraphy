@@ -294,16 +294,14 @@ const AdminGallery = () => {
       <div style={{ color: 'var(--brown)' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <button onClick={() => { setSelectedAlbum(null); setPhotos([]); }}
-            style={{ background: 'transparent', border: '1.5px solid var(--brown2)', borderRadius: '8px', padding: '6px 16px', cursor: 'pointer', color: 'var(--brown)', fontWeight: '500' }}>
+          <button onClick={() => { setSelectedAlbum(null); setPhotos([]); }} className="btn-ghost">
             ← Back
           </button>
           <div>
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', margin: 0 }}>{selectedAlbum.title}</h2>
             <p style={{ margin: 0, opacity: 0.6, fontSize: '0.85rem' }}>{photos.length} photos · {selectedAlbum.availableEvents?.join(', ')}</p>
           </div>
-          <button onClick={() => setShowAddPhotos(true)}
-            style={{ marginLeft: 'auto', padding: '8px 20px', background: 'var(--brown)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem' }}>
+          <button onClick={() => setShowAddPhotos(true)} className="btn-primary" style={{ marginLeft: 'auto', padding: '8px 20px' }}>
             + Add Photos
           </button>
         </div>
@@ -328,8 +326,8 @@ const AdminGallery = () => {
                   {tagPhotos.map(photo => (
                     <div key={photo._id} style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--brown3)', position: 'relative', background: 'rgba(255,255,255,0.4)' }}>
                       <img src={photo.src} alt={photo.alt || ''} style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
-                      <button onClick={() => handleDeletePhoto(photo._id)}
-                        style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(192,57,43,0.9)', color: 'white', border: 'none', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600' }}>
+                      <button onClick={() => handleDeletePhoto(photo._id)} className="btn-danger-metallic"
+                        style={{ position: 'absolute', top: '6px', right: '6px', padding: '2px 8px' }}>
                         ✕
                       </button>
                     </div>
@@ -406,12 +404,11 @@ const AdminGallery = () => {
               {uploadStatus && <p style={{ color: 'var(--brown)', fontSize: '0.85rem', marginTop: '0.5rem', fontWeight: '500' }}>{uploadStatus}</p>}
 
               <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', justifyContent: 'flex-end' }}>
-                <button onClick={() => { setShowAddPhotos(false); setPendingPhotos([]); }}
-                  style={{ padding: '9px 20px', background: 'transparent', border: '1.5px solid var(--brown2)', borderRadius: '8px', cursor: 'pointer', color: 'var(--brown)', fontWeight: '500' }}>
+                <button onClick={() => { setShowAddPhotos(false); setPendingPhotos([]); }} className="btn-ghost">
                   Cancel
                 </button>
                 <button onClick={handleUploadPhotos} disabled={uploadingPhotos || pendingPhotos.length === 0}
-                  style={{ padding: '9px 24px', background: pendingPhotos.length > 0 ? 'var(--brown)' : 'var(--brown3)', color: 'white', border: 'none', borderRadius: '8px', cursor: pendingPhotos.length > 0 ? 'pointer' : 'not-allowed', fontWeight: '600' }}>
+                  className="btn-primary" style={{ padding: '9px 24px', opacity: pendingPhotos.length > 0 ? 1 : 0.5 }}>
                   {uploadingPhotos ? uploadStatus || 'Uploading...' : `Upload ${pendingPhotos.length} Photo${pendingPhotos.length !== 1 ? 's' : ''}`}
                 </button>
               </div>
@@ -427,8 +424,7 @@ const AdminGallery = () => {
     <div style={{ color: 'var(--brown)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.8rem', margin: 0 }}>Albums</h2>
-        <button onClick={() => setShowNewAlbumModal(true)}
-          style={{ padding: '9px 22px', background: 'var(--brown)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '0.9rem' }}>
+        <button onClick={() => setShowNewAlbumModal(true)} className="btn-primary">
           + New Album
         </button>
       </div>
@@ -466,8 +462,7 @@ const AdminGallery = () => {
                     <span style={{ fontSize: '0.72rem', opacity: 0.6 }}>+{album.availableEvents.length - 3}</span>
                   )}
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); handleDeleteAlbum(album._id); }}
-                  style={{ padding: '4px 12px', background: '#c0392b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600' }}>
+                <button onClick={(e) => { e.stopPropagation(); handleDeleteAlbum(album._id); }} className="btn-danger-metallic">
                   Delete
                 </button>
               </div>
@@ -518,11 +513,11 @@ const AdminGallery = () => {
 
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
               <button onClick={() => { setShowNewAlbumModal(false); setError(''); setCoverFile(null); setCoverPreview(null); setNewAlbum({ title: '', availableEvents: [] }); }}
-                style={{ padding: '9px 20px', background: 'transparent', border: '1.5px solid var(--brown2)', borderRadius: '8px', cursor: 'pointer', color: 'var(--brown)', fontWeight: '500' }}>
+                className="btn-ghost">
                 Cancel
               </button>
               <button onClick={handleCreateAlbum} disabled={creatingAlbum}
-                style={{ padding: '9px 24px', background: 'var(--brown)', color: 'white', border: 'none', borderRadius: '8px', cursor: creatingAlbum ? 'wait' : 'pointer', fontWeight: '600' }}>
+                className="btn-primary" style={{ padding: '9px 24px', opacity: creatingAlbum ? 0.5 : 1 }}>
                 {creatingAlbum ? 'Creating...' : 'Create Album'}
               </button>
             </div>

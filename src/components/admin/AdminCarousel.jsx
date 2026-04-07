@@ -99,11 +99,10 @@ const AdminCarousel = () => {
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
           {CAROUSEL_TABS.map(tab => (
             <button key={tab} onClick={() => setSelectedTab(tab)}
+              className={selectedTab === tab ? "btn-primary active-tab" : "btn-ghost"}
               style={{
-                padding: '6px 16px', borderRadius: '20px', border: '1.5px solid var(--brown2)',
-                background: selectedTab === tab ? 'var(--brown)' : 'transparent',
-                color: selectedTab === tab ? 'white' : 'var(--brown)',
-                cursor: 'pointer', fontSize: '0.85rem', fontWeight: '500', transition: 'all 0.2s'
+                padding: '6px 16px', borderRadius: '20px',
+                fontSize: '0.85rem', fontWeight: '500', transition: 'all 0.2s'
               }}>
               {tab}
             </button>
@@ -149,11 +148,8 @@ const AdminCarousel = () => {
         )}
 
         <button onClick={handleUpload} disabled={uploading || !selectedFile}
-          style={{
-            padding: '10px 24px', background: selectedFile ? 'var(--brown)' : 'var(--brown3)',
-            color: 'white', border: 'none', borderRadius: '8px', cursor: selectedFile ? 'pointer' : 'not-allowed',
-            fontWeight: '600', fontSize: '0.95rem', transition: 'all 0.2s'
-          }}>
+          className="btn-primary"
+          style={{ width: '100%', padding: '12px', marginTop: '1rem', opacity: selectedFile ? 1 : 0.5 }}>
           {uploading ? `Uploading... ${uploadProgress}%` : 'Upload to Cloudinary'}
         </button>
       </div>
@@ -175,8 +171,7 @@ const AdminCarousel = () => {
                 <span style={{ fontSize: '0.8rem', background: 'var(--brown3)', padding: '3px 10px', borderRadius: '12px', color: 'var(--brown)', fontWeight: '500' }}>
                   {img.tab || '—'}
                 </span>
-                <button onClick={() => handleDelete(img._id)}
-                  style={{ padding: '5px 12px', background: '#c0392b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}>
+                <button onClick={() => handleDelete(img._id)} className="btn-danger-metallic">
                   Delete
                 </button>
               </div>

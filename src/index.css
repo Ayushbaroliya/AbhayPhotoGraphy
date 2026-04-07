@@ -4,15 +4,15 @@
 
 /* ACTIVE THEME */
 :root {
-  --cream: #0B0B2A;      --cream-rgb: 11, 11, 42;
-  --cream2: #1A1A4D;     --cream2-rgb: 26, 26, 77;
-  --brown: #F8F8FF;      --brown-rgb: 248, 248, 255;
-  --brown2: #C0C0C0;
-  --brown3: #808080;
-  --red: #483D8B;        --red-rgb: 72, 61, 139;
-  --red2: #282152;
-  --gold: #E6E6FA;
-  --warm: #050514;       --warm-rgb: 5, 5, 20;
+  --cream: #0F0F0F;      --cream-rgb: 15, 15, 15;
+  --cream2: #262626;     --cream2-rgb: 38, 38, 38;
+  --brown: #F5F5F5;      --brown-rgb: 245, 245, 245;
+  --brown2: #E0115F;
+  --brown3: #990B40;
+  --red: #E0115F;        --red-rgb: 224, 17, 95;
+  --red2: #990B40;
+  --gold: #FF2400;
+  --warm: #050505;       --warm-rgb: 5, 5, 5;
 }
 
 /* =========================================
@@ -428,4 +428,90 @@ footer { background: var(--warm); color: var(--brown); padding: 80px 48px 32px; 
   .lb-prev { left: 10px; }
   .lb-next { right: 10px; }
   .lb-close { top: 15px; right: 15px; font-size: 1.8rem; }
+}
+/* =========================================
+   ADMIN PANEL THEME: ROYAL VELVET & ROSE GOLD
+   ========================================= */
+.admin-page-root {
+  background: radial-gradient(circle at 50% 10%, #1a0b1a, #0c0510, #050205) !important;
+  position: relative;
+  overflow: hidden;
+  color: #f8f1f1 !important;
+}
+
+/* Subtle fabric texture overlay */
+.admin-page-root::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre-v2.png");
+  opacity: 0.08;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.admin-page-root .btn-primary {
+  background: linear-gradient(135deg, #b76e79, #efc1c8, #9c525b, #ffd1dc, #b76e79) !important;
+  color: #2d161a !important;
+  border: 1px solid #9c525b !important;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4), inset 0 0 5px rgba(255,255,255,0.3);
+}
+
+.admin-page-root .btn-primary:hover {
+  background: linear-gradient(135deg, #9c525b, #ffd1dc, #b76e79, #efc1c8, #9c525b) !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(183, 110, 121, 0.4);
+}
+
+.admin-page-root .btn-ghost {
+  border: 1.5px solid #b76e79 !important;
+  color: #efc1c8 !important;
+  background: rgba(183, 110, 121, 0.05) !important;
+  font-weight: 600;
+}
+
+.admin-page-root .btn-ghost:hover {
+  background: rgba(183, 110, 121, 0.15) !important;
+  color: #fff !important;
+  text-shadow: 0 0 8px #b76e79;
+}
+
+.admin-page-root .btn-danger-metallic {
+  background: linear-gradient(135deg, #8b0000, #e0115f, #660000, #e0115f, #8b0000) !important;
+  color: #fff !important;
+  border: 1px solid #4a0000 !important;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.admin-page-root .btn-danger-metallic:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(224, 17, 95, 0.3);
+  filter: brightness(1.2);
+}
+
+.admin-page-root h1, .admin-page-root h2 {
+  color: #efc1c8 !important;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.6);
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.admin-page-root p {
+  color: rgba(239, 193, 200, 0.7) !important;
+}
+
+/* Tab button specific active state */
+.admin-page-root .active-tab {
+  background: linear-gradient(135deg, #b76e79, #efc1c8, #b76e79) !important;
+  color: #2d161a !important;
+  box-shadow: 0 4px 15px rgba(183, 110, 121, 0.3);
 }

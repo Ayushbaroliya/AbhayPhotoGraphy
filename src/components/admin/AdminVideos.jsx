@@ -73,7 +73,7 @@ const AdminVideos = () => {
           onChange={(e) => setNewVideo({...newVideo, order: parseInt(e.target.value) || 0})} 
           style={{ width: '100%', padding: '12px', border: '1px solid var(--brown2)', background: 'var(--cream)', color: 'var(--brown)', borderRadius: '4px' }}
         />
-        <button type="submit" className="btn-primary" style={{ width: 'max-content' }}>Add Video</button>
+        <button type="submit" className="btn-primary" style={{ width: 'max-content', padding: '12px 24px' }}>Add Video</button>
       </form>
 
       {loading ? <p>Loading...</p> : (
@@ -88,7 +88,7 @@ const AdminVideos = () => {
                   <div style={{ fontWeight: 'bold' }}>{video.title}</div>
                   <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>Order: {video.order}</div>
                 </div>
-                <button onClick={() => handleDelete(video._id)} style={{ background: 'var(--red)', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Delete</button>
+                <button onClick={() => handleDelete(video._id)} className="btn-danger-metallic">Delete</button>
               </div>
             </div>
           ))}

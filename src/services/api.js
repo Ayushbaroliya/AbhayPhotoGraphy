@@ -61,4 +61,8 @@ export const addPricing = async (data) => (await api.post('/pricing', data)).dat
 export const updatePricing = async (id, data) => (await api.put(`/pricing?id=${id}`, data)).data;
 export const deletePricing = async (id) => (await api.delete(`/pricing?id=${id}`)).data;
 
+// ── About ────────────────────────────────────────────────────────────────────
+export const getAbout = async () => (await api.get('/about')).data;
+export const updateAbout = async (data) => (await api.post('/about', data)).data;
+
 export default api;

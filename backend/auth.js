@@ -1,5 +1,16 @@
 import jwt from 'jsonwebtoken';
 
+export const verifyToken = (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  const token = authHeader.split(' ')[1];
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+  } catch (err) {
+    return null;
+  }
+};
+
 export default async function handler(req, res) {
   // CORS preflight
   if (req.method === 'OPTIONS') {
@@ -17,15 +28,10 @@ export default async function handler(req, res) {
 
   // Handle Token Verification (GET)
   if (req.method === 'GET') {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: 'No token provided' });
-    }
-    const token = authHeader.split(' ')[1];
-    try {
-      jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
-      return res.status(200).json({ success: true, message: 'Token is valid' });
-    } catch (err) {
+    const user = verifyToken(req);
+    if (user) {
+      return res.status(200).json({ success: true, message: 'Token is valid', user });
+    } else {
       return res.status(401).json({ success: false, message: 'Invalid or expired token' });
     }
   }

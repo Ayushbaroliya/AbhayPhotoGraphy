@@ -37,6 +37,7 @@ import photosHandler from './backend/photos.js';
 import videosHandler from './backend/videos.js';
 import pricingHandler from './backend/pricing.js';
 import uploadHandler from './backend/upload.js';
+import aboutHandler from './backend/about.js';
 import uploadMiddleware from './backend/uploadMiddleware.js';
 
 app.all('/api/auth', adapt(authHandler));
@@ -45,6 +46,7 @@ app.all('/api/albums', adapt(albumsHandler));
 app.all('/api/photos', adapt(photosHandler));
 app.all('/api/videos', adapt(videosHandler));
 app.all('/api/pricing', adapt(pricingHandler));
+app.all('/api/about', adapt(aboutHandler));
 
 // Upload route: always use multer since Vercel bodyParser is disabled
 app.post('/api/upload', (req, res, next) => {

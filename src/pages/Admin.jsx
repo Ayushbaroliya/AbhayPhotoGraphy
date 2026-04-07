@@ -6,6 +6,7 @@ import AdminCarousel from '../components/admin/AdminCarousel';
 import AdminGallery from '../components/admin/AdminGallery';
 import AdminVideos from '../components/admin/AdminVideos';
 import AdminPricing from '../components/admin/AdminPricing';
+import AdminAbout from '../components/admin/AdminAbout';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -99,7 +100,7 @@ const Admin = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', padding: '3rem 5%', backgroundColor: 'var(--cream)', color: 'var(--brown)' }}>
+    <div className="admin-page-root" style={{ minHeight: '100vh', padding: '3rem 5%', color: 'var(--brown)' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid rgba(242,232,213,0.2)', paddingBottom: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '2.5rem', margin: 0 }}>Dashboard</h1>
@@ -111,8 +112,9 @@ const Admin = () => {
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', overflowX: 'auto', paddingBottom: '1rem' }}>
         <button onClick={() => setActiveTab('carousel')} className={activeTab === 'carousel' ? 'btn-primary' : 'btn-ghost'}>🖼 Carousel</button>
         <button onClick={() => setActiveTab('gallery')} className={activeTab === 'gallery' ? 'btn-primary' : 'btn-ghost'}>📂 Albums</button>
-        <button onClick={() => setActiveTab('videos')} className={activeTab === 'videos' ? 'btn-primary' : 'btn-ghost'}>🎬 Videos</button>
-        <button onClick={() => setActiveTab('pricing')} className={activeTab === 'pricing' ? 'btn-primary' : 'btn-ghost'}>💰 Pricing</button>
+        <button onClick={() => setActiveTab('videos')} className={activeTab === 'videos' ? 'btn-primary active-tab' : 'btn-ghost'}>🎬 Videos</button>
+        <button onClick={() => setActiveTab('pricing')} className={activeTab === 'pricing' ? 'btn-primary active-tab' : 'btn-ghost'}>💰 Pricing</button>
+        <button onClick={() => setActiveTab('about')} className={activeTab === 'about' ? 'btn-primary active-tab' : 'btn-ghost'}>👤 About</button>
       </div>
 
       <main>
@@ -120,6 +122,7 @@ const Admin = () => {
         {activeTab === 'gallery' && <AdminGallery />}
         {activeTab === 'videos' && <AdminVideos />}
         {activeTab === 'pricing' && <AdminPricing />}
+        {activeTab === 'about' && <AdminAbout />}
       </main>
 
     </div>

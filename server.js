@@ -48,8 +48,11 @@ try {
   app.all('/api/videos', adapt(videosHandler));
   app.all('/api/pricing', adapt(pricingHandler));
 
-  // Upload route with multer middleware (local dev only)
-  app.post('/api/upload', uploadMiddleware, adapt(uploadHandler));
+  // Upload route: locally use multer, on Vercel use the manual raw body parser
+  app.post('/api/upload', (req, res, next) => {
+    console.log('[SERVER] Incoming request to /api/upload:', req.headers['content-type']);
+    next();
+  }, process.env.VERCEL ? (req, res, next) => next() : uploadMiddleware, adapt(uploadHandler));
 
   console.log('✅ All API routes loaded successfully');
 } catch (err) {

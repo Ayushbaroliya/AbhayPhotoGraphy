@@ -9,13 +9,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Parse raw body as buffer (works on both Vercel and Express with multer)
 const getRawBody = (req) =>
   new Promise((resolve, reject) => {
+    if (Buffer.isBuffer(req.body)) return resolve(req.body);
+    if (typeof req.body === 'string') return resolve(Buffer.from(req.body));
+    if (req.complete && req.body && Object.keys(req.body).length === 0) {
+       // weird Edge case where stream is closed and body is empty object
+       console.log('[UPLOAD] req stream is complete but empty body');
+    }
+    
     const chunks = [];
     req.on('data', (chunk) => chunks.push(chunk));
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
+    
+    // If it's already ended before we listen
+    if (req.complete && chunks.length === 0) {
+      resolve(Buffer.from(''));
+    }
   });
 
 // Extract boundary from content-type header
@@ -80,27 +91,40 @@ export default async function handler(req, res) {
   try {
     const contentType = req.headers['content-type'] || '';
     const boundary = getBoundary(contentType);
+    console.log('[UPLOAD] Content-Type:', contentType, 'Boundary:', boundary);
+    
     if (!boundary) return res.status(400).json({ success: false, message: 'No multipart boundary found' });
 
     // If Express already parsed it via multer middleware, req.file exists
     let fileBuffer, folder, mimetype;
 
+    console.log('[UPLOAD] req.file exists?', !!req.file);
     if (req.file) {
       // Called from Express server with multer
       fileBuffer = req.file.buffer;
       folder = req.body?.folder || 'abhay-photography';
       mimetype = req.file.mimetype;
+      console.log('[UPLOAD] Using multer fallback. Folder:', folder, 'Mimetype:', mimetype, 'Size:', fileBuffer.length);
     } else {
+      console.log('[UPLOAD] req.file missing. Fallback to manual raw body parse.');
       // Called from Vercel serverless — parse raw body manually
+      console.log('[UPLOAD] Starting getRawBody...');
       const raw = await getRawBody(req);
+      console.log('[UPLOAD] getRawBody finished. Size:', raw.length);
+      
       const parts = parseMultipart(raw, boundary);
+      console.log('[UPLOAD] parseMultipart parts count:', parts.length);
+      
       if (!parts.length) return res.status(400).json({ success: false, message: 'No image file found in request' });
       fileBuffer = parts[0].data;
       folder = parts.folder || 'abhay-photography';
       mimetype = parts[0].mimetype;
+      console.log('[UPLOAD] Manual parsed. Folder:', folder, 'Mimetype:', mimetype, 'File size:', fileBuffer.length);
     }
 
+    console.log('[UPLOAD] Starting Cloudinary upload...');
     const result = await uploadToCloudinary(fileBuffer, folder, mimetype);
+    console.log('[UPLOAD] Cloudinary success:', result.public_id);
 
     return res.status(200).json({
       success: true,
@@ -108,7 +132,7 @@ export default async function handler(req, res) {
       publicId: result.public_id,
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('[UPLOAD ERROR] Exception:', error);
     return res.status(500).json({ success: false, error: error.message });
   }
 }

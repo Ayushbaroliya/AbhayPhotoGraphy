@@ -30,35 +30,29 @@ const adapt = (handler) => async (req, res) => {
   }
 };
 
-// Load all API handlers
-try {
-  const { default: authHandler } = await import('./backend/auth.js');
-  const { default: carouselHandler } = await import('./backend/carousel.js');
-  const { default: albumsHandler } = await import('./backend/albums.js');
-  const { default: photosHandler } = await import('./backend/photos.js');
-  const { default: videosHandler } = await import('./backend/videos.js');
-  const { default: pricingHandler } = await import('./backend/pricing.js');
-  const { default: uploadHandler } = await import('./backend/upload.js');
-  const { default: uploadMiddleware } = await import('./backend/uploadMiddleware.js');
+import authHandler from './backend/auth.js';
+import carouselHandler from './backend/carousel.js';
+import albumsHandler from './backend/albums.js';
+import photosHandler from './backend/photos.js';
+import videosHandler from './backend/videos.js';
+import pricingHandler from './backend/pricing.js';
+import uploadHandler from './backend/upload.js';
+import uploadMiddleware from './backend/uploadMiddleware.js';
 
-  app.all('/api/auth', adapt(authHandler));
-  app.all('/api/carousel', adapt(carouselHandler));
-  app.all('/api/albums', adapt(albumsHandler));
-  app.all('/api/photos', adapt(photosHandler));
-  app.all('/api/videos', adapt(videosHandler));
-  app.all('/api/pricing', adapt(pricingHandler));
+app.all('/api/auth', adapt(authHandler));
+app.all('/api/carousel', adapt(carouselHandler));
+app.all('/api/albums', adapt(albumsHandler));
+app.all('/api/photos', adapt(photosHandler));
+app.all('/api/videos', adapt(videosHandler));
+app.all('/api/pricing', adapt(pricingHandler));
 
-  // Upload route: locally use multer, on Vercel use the manual raw body parser
-  app.post('/api/upload', (req, res, next) => {
-    console.log('[SERVER] Incoming request to /api/upload:', req.headers['content-type']);
-    next();
-  }, process.env.VERCEL ? (req, res, next) => next() : uploadMiddleware, adapt(uploadHandler));
+// Upload route: locally use multer, on Vercel use the manual raw body parser
+app.post('/api/upload', (req, res, next) => {
+  console.log('[SERVER] Incoming request to /api/upload:', req.headers['content-type']);
+  next();
+}, process.env.VERCEL ? (req, res, next) => next() : uploadMiddleware, adapt(uploadHandler));
 
-  console.log('✅ All API routes loaded successfully');
-} catch (err) {
-  console.error('❌ Failed to load API handlers:', err.message);
-  process.exit(1);
-}
+console.log('✅ All API routes loaded successfully');
 
 const PORT = process.env.PORT || 3001;
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {

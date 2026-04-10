@@ -37,12 +37,24 @@ const VideoGrid = () => {
 
   const getEmbedUrl = (url) => {
     if (!url) return '';
+    
+    // If user pasted a full iframe HTML string by accident, extract just the src URL
+    if (url.includes('<iframe') && url.includes('src="')) {
+      const match = url.match(/src="([^"]+)"/);
+      if (match && match[1]) {
+        url = match[1];
+      }
+    }
+    
+    // Transform to embed links
     if (url.includes('youtube.com/watch?v=')) {
-      return url.replace('youtube.com/watch?v=', 'youtube.com/embed/').split('&')[0];
+      url = url.replace('youtube.com/watch?v=', 'youtube.com/embed/').split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+      url = url.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
+    } else if (url.includes('youtube.com/shorts/')) {
+      url = url.replace('youtube.com/shorts/', 'youtube.com/embed/').split('?')[0];
     }
-    if (url.includes('youtu.be/')) {
-      return url.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
-    }
+    
     return url;
   };
 

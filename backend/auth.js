@@ -1,14 +1,12 @@
-import jwt from 'jsonwebtoken';
-
 export const verifyToken = (req) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
   const token = authHeader.split(' ')[1];
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
-  } catch (err) {
-    return null;
+  
+  if (token === process.env.ADMIN_PASSWORD) {
+    return { role: 'admin' };
   }
+  return null;
 };
 
 export default async function handler(req, res) {
@@ -16,7 +14,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
     return res.status(200).end();
   }
   
@@ -30,9 +28,9 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const user = verifyToken(req);
     if (user) {
-      return res.status(200).json({ success: true, message: 'Token is valid', user });
+      return res.status(200).json({ success: true, message: 'Auth valid', user });
     } else {
-      return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+      return res.status(401).json({ success: false, message: 'Invalid or expired auth' });
     }
   }
 
@@ -53,12 +51,7 @@ export default async function handler(req, res) {
     }
 
     if (password === adminPassword) {
-      const token = jwt.sign(
-        { role: 'admin' }, 
-        process.env.JWT_SECRET || 'fallback_secret', 
-        { expiresIn: '24h' }
-      );
-      return res.status(200).json({ success: true, token });
+      return res.status(200).json({ success: true, token: password });
     } else {
       return res.status(401).json({ success: false, message: 'Invalid password' });
     }

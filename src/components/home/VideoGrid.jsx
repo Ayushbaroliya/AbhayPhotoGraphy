@@ -35,6 +35,17 @@ const VideoGrid = () => {
     }
   };
 
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/watch?v=')) {
+      return url.replace('youtube.com/watch?v=', 'youtube.com/embed/').split('&')[0];
+    }
+    if (url.includes('youtu.be/')) {
+      return url.replace('youtu.be/', 'youtube.com/embed/').split('?')[0];
+    }
+    return url;
+  };
+
   return (
     <section className="videos-section" id="videos">
       <p className="section-label">Cinematic Films</p>
@@ -55,7 +66,7 @@ const VideoGrid = () => {
               <div key={video.id} className="video-card">
                 <div className="video-wrapper">
                   <iframe
-                    src={video.embedUrl}
+                    src={getEmbedUrl(video.embedUrl)}
                     title={video.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

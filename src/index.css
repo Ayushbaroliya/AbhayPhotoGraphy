@@ -174,14 +174,20 @@ section { padding: 100px 48px; max-width: 1440px; margin: 0 auto; width: 100%; }
 .tcard:hover { transform: translateY(-4px); }
 .tcard-quote { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; line-height: 1.7; color: rgba(var(--brown-rgb), 0.9); margin-bottom: 24px; flex-grow: 1; }
 
-.pcard { border: 1px solid rgba(var(--brown-rgb), 0.15); border-radius: 8px; padding: 40px 32px; display: flex; flex-direction: column; transition: all 0.3s; }
-.pcard.featured { background: var(--brown); border-color: var(--brown); color: var(--cream); transform: scale(1.04); box-shadow: 0 24px 60px rgba(var(--warm-rgb), 0.4); z-index: 2; }
+.pcard { background: rgba(var(--cream2-rgb), 0.3); border: 1px solid rgba(var(--brown-rgb), 0.1); border-radius: 12px; padding: 40px 32px; display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s, border-color 0.4s; position: relative; overflow: hidden; }
+.pcard:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: rgba(var(--brown-rgb), 0.3); }
+.pcard.featured { background: linear-gradient(135deg, var(--brown) 0%, rgba(var(--brown-rgb), 0.9) 100%); border-color: var(--brown); color: var(--cream); transform: scale(1.05); box-shadow: 0 24px 60px rgba(0,0,0,0.6); z-index: 2; }
+.pcard.featured:hover { transform: scale(1.05) translateY(-8px); box-shadow: 0 30px 70px rgba(0,0,0,0.7); }
+.pcard::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: shine 7s infinite; pointer-events: none; }
+.pcard.featured::after { background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); }
+@keyframes shine { 0% { left: -100%; } 15% { left: 200%; } 100% { left: 200%; } }
 .pcard.featured .p-name, .pcard.featured .p-price, .pcard.featured .p-per, .pcard.featured .p-features li { color: var(--cream); }
-.p-name { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; margin-bottom: 8px; }
-.p-price { font-size: 2.5rem; font-weight: 300; margin: 16px 0 4px; }
-.btn-pricing { width: 100%; padding: 14px; margin-top: auto; border: 1px solid rgba(var(--brown-rgb), 0.3); background: transparent; cursor: pointer; text-transform: uppercase; font-family: 'Jost', sans-serif; transition: all 0.2s; }
-.btn-pricing:hover { background: var(--brown); color: var(--cream); }
-.pcard.featured .btn-pricing { background: var(--red); color: #fff; border: none; }
+.p-name { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; margin-bottom: 8px; position: relative; z-index: 1; }
+.p-price { font-size: 2.5rem; font-weight: 300; margin: 16px 0 4px; position: relative; z-index: 1; }
+.btn-pricing { width: 100%; padding: 14px; margin-top: auto; border: 1px solid rgba(var(--brown-rgb), 0.3); background: transparent; color: var(--brown); cursor: pointer; text-transform: uppercase; font-family: 'Jost', sans-serif; transition: all 0.3s; position: relative; z-index: 1; border-radius: 4px; }
+.btn-pricing:hover { background: var(--brown); color: var(--cream); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--brown-rgb), 0.2); }
+.pcard.featured .btn-pricing { background: linear-gradient(135deg, var(--red) 0%, var(--red2) 100%); color: #fff; border: none; box-shadow: 0 4px 15px rgba(var(--red-rgb), 0.4); }
+.pcard.featured .btn-pricing:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(var(--red-rgb), 0.6); }
 
 /* =========================================
    FOOTER & WHATSAPP BUTTON
@@ -514,4 +520,22 @@ footer { background: var(--warm); color: var(--brown); padding: 80px 48px 32px; 
   background: linear-gradient(135deg, #b76e79, #efc1c8, #b76e79) !important;
   color: #2d161a !important;
   box-shadow: 0 4px 15px rgba(183, 110, 121, 0.3);
+}
+
+/* =========================================
+   SHIMMER LOADING UI
+   ========================================= */
+.shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #2a2a2a 4%, #3a3a3a 25%, #2a2a2a 36%);
+  background-size: 1000px 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }

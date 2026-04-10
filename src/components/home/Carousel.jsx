@@ -2,37 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { getOptimizedUrl } from '../../utils/imageOptimization';
 import { fetchCarousel } from '../../services/mockApi';
 
-export const fallbackImgs = [
-  { src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=500&h=700&fit=crop&q=80', tab: 'reception' },
-  { src: 'https://images.unsplash.com/photo-1591604021695-0c69b7c05981?w=500&h=700&fit=crop&q=80', tab: 'mehendi' },
-  { src: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=500&h=700&fit=crop&q=80', tab: 'haldi' },
-  { src: 'https://images.unsplash.com/photo-1595981234058-a9302fb97229?w=500&h=700&fit=crop&q=80', tab: 'reception' },
-  { src: 'https://images.unsplash.com/photo-1609151354039-60abbc843a21?w=500&h=700&fit=crop&q=80', tab: 'mehendi' },
-  { src: 'https://images.unsplash.com/photo-1622495966027-e0173192c728?w=500&h=700&fit=crop&q=80', tab: 'haldi' },
-  { src: 'https://images.unsplash.com/photo-1600091166971-7f9faad6c2b2?w=500&h=700&fit=crop&q=80', tab: 'reception' },
-];
-
 const Carousel = () => {
-  const [imgs, setImgs] = useState(fallbackImgs);
+  const [imgs, setImgs] = useState([]);
   const [active, setActive] = useState(0);
-  const n = imgs.length;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       const res = await fetchCarousel();
       if (res && res.success && res.data && res.data.length >= 3) {
         setImgs(res.data);
+      } else {
+        // Safe fallback if API fails or returns < 3 items so the UI doesn't break
+        setImgs([
+          { src: 'fallback', tab: 'fallback' },
+          { src: 'fallback', tab: 'fallback' },
+          { src: 'fallback', tab: 'fallback' }
+        ]);
       }
+      setLoading(false);
     };
     loadData();
   }, []);
 
+  const n = imgs.length;
+
   useEffect(() => {
+    if (loading || imgs.length === 0) return;
     const auto = setInterval(() => {
       setActive((prev) => prev + 1);
     }, 3500);
     return () => clearInterval(auto);
-  }, []);
+  }, [loading, imgs]);
 
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
@@ -42,17 +44,50 @@ const Carousel = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // For a concave interior cylinder, radius controls how wide the arc is around the viewer
   const radius = isMobile ? 320 : 550;
-  const theta = 360 / n;
+  const theta = n > 0 ? 360 / n : 0;
 
   const handleNav = (i) => {
+    if (n === 0) return;
     const currentNorm = ((active % n) + n) % n;
     let delta = i - currentNorm;
     if (delta > Math.floor(n/2)) delta -= n;
     if (delta < -Math.floor(n/2)) delta += n;
     setActive(active + delta);
   };
+
+  if (loading) {
+    return (
+      <div 
+        className="carousel-wrap" 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          overflow: 'hidden',
+          width: '100%',
+          height: isMobile ? '400px' : '520px',
+          marginTop: '40px',
+          gap: isMobile ? '16px' : '20px'
+        }}
+      >
+        {[1, 2, 3].map((_, i) => (
+          <div 
+            key={i} 
+            className="shimmer"
+            style={{
+              width: isMobile ? '200px' : '280px', 
+              height: isMobile ? '280px' : '400px',
+              borderRadius: '16px',
+              opacity: i === 1 ? 1 : 0.5,
+              transform: i === 1 ? 'scale(1.05)' : 'scale(0.95)',
+              flexShrink: 0
+            }}
+          ></div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -76,7 +111,6 @@ const Carousel = () => {
             height: isMobile ? '280px' : '400px',
             transformStyle: 'preserve-3d',
             transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-            // Translate Z forward to sit in front of the viewer, establishing our viewpoint as the center of the cylinder!
             transform: `translateZ(${radius}px) rotateY(${active * -theta}deg)`
           }}
         >
@@ -87,7 +121,6 @@ const Carousel = () => {
 
             const angle = i * theta;
 
-            // Dim and blur images aggressively as they wrap around the peripheral vision
             const op = diff > 2 ? 0 : (diff === 2 ? 0.1 : (diff === 1 ? 0.5 : 1));
             const blurVal = diff === 0 ? 0 : (diff === 1 ? 2 : 6);
             const isClickable = diff <= 1;
@@ -99,7 +132,6 @@ const Carousel = () => {
                   position: 'absolute',
                   left: 0, top: 0,
                   width: '100%', height: '100%',
-                  // Translate Z backwards to establish the wall of the cylinder
                   transform: `rotateY(${angle}deg) translateZ(${-radius}px)`,
                   opacity: op,
                   filter: `blur(${blurVal}px)`,
@@ -112,7 +144,11 @@ const Carousel = () => {
                 }}
                 onClick={() => isClickable && handleNav(i)}
               >
-                <img src={getOptimizedUrl(img.src, 600)} alt="wedding" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                {img.src !== 'fallback' ? (
+                  <img src={getOptimizedUrl(img.src, 600)} alt="wedding" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                ) : (
+                  <div className="shimmer" style={{ width: '100%', height: '100%' }}></div>
+                )}
               </div>
             );
           })}
